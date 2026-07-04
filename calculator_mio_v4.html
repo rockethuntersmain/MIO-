@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>МИО — Мотивация</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--g:#2E5E4E;--gl:#E8F4F0;--gm:#B2D8CE;--bg:#F4F6F5;--w:#fff;--br:#DDE5E2;
+  --tx:#1A1A1A;--mu:#7A8C87;--rd:#DC2626;--py:#16A34A;--r:12px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  background:var(--bg);color:var(--tx);min-height:100vh;font-size:15px}
+.topbar{background:var(--g);color:#fff;display:flex;align-items:center;
+  padding:13px 16px;gap:10px;position:sticky;top:0;z-index:50}
+.topbar-title{font-size:17px;font-weight:700;flex:1}
+.mbtn{background:rgba(255,255,255,.2);border-radius:20px;padding:5px 13px;
+  font-size:13px;border:none;color:#fff;font-weight:600;cursor:pointer}
+.steps{display:flex;background:var(--w);border-bottom:1px solid var(--br)}
+.step{flex:1;padding:11px 4px;text-align:center;cursor:pointer;
+  border-bottom:3px solid transparent;background:none;border-top:none;border-left:none;border-right:none}
+.step.active{border-bottom-color:var(--g)}
+.step-icon{font-size:19px;display:block;margin-bottom:1px}
+.step-lbl{font-size:11px;font-weight:500;color:var(--mu)}
+.step.active .step-lbl{color:var(--g)}
+.page{display:none;padding:14px;padding-bottom:40px}
+.page.active{display:block}
+.card{background:var(--w);border-radius:var(--r);box-shadow:0 2px 8px rgba(0,0,0,.08);margin-bottom:12px;overflow:hidden}
+.card-hd{font-size:13px;font-weight:600;padding:12px 15px;border-bottom:1px solid var(--br);
+  color:var(--g);display:flex;justify-content:space-between;align-items:center}
+.card-bd{padding:13px 15px}
+.lbl{font-size:12px;color:var(--mu);font-weight:500;margin-bottom:5px;display:block}
+.inp{width:100%;border:1.5px solid var(--br);border-radius:9px;padding:11px 13px;
+  font-size:16px;background:#fff;color:var(--tx);outline:none;transition:border-color .15s;
+  -webkit-appearance:none;font-variant-numeric:tabular-nums}
+.inp:focus{border-color:var(--g)}
+.field{margin-bottom:12px}.field:last-child{margin-bottom:0}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;
+  padding:13px;border-radius:10px;font-size:15px;font-weight:600;border:none;cursor:pointer}
+.btn-primary{background:var(--g);color:#fff}
+.btn-primary:active{opacity:.85}
+.btn-outline{background:#fff;color:var(--g);border:1.5px solid var(--gm)}
+.btn-sm{padding:7px 13px;font-size:13px;border-radius:8px;width:auto}
+.btn-ghost{background:none;border:1.5px dashed var(--br);color:var(--mu);
+  width:100%;padding:11px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer}
+.btn-ghost:hover{border-color:var(--g);color:var(--g)}
+.notice{background:var(--gl);border-left:3px solid var(--g);border-radius:0 8px 8px 0;
+  padding:10px 12px;font-size:13px;color:#1D4037;margin-bottom:12px;line-height:1.5}
+/* DAYS */
+.wday-row{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:3px}
+.wday-lbl{text-align:center;font-size:10px;color:var(--mu);font-weight:600;padding:1px 0}
+.days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.day-cell{text-align:center}
+.day-num{font-size:10px;color:var(--mu);margin-bottom:2px;line-height:1}
+.day-inp{width:100%;border:1.5px solid var(--br);border-radius:6px;padding:5px 2px;
+  font-size:12px;text-align:center;outline:none;background:#fff;-webkit-appearance:none;
+  font-variant-numeric:tabular-nums;color:var(--tx)}
+.day-inp:focus{border-color:var(--g);background:var(--gl)}
+.day-inp.hv{background:var(--gl);border-color:var(--gm);font-weight:600}
+/* EMP */
+.emp-card{background:var(--w);border-bottom:1px solid var(--br)}
+.emp-card:last-child{border-bottom:none}
+.emp-hd{padding:12px 15px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.emp-av{width:36px;height:36px;border-radius:50%;background:var(--gl);color:var(--g);
+  font-weight:700;font-size:15px;flex:none;display:flex;align-items:center;justify-content:center}
+.emp-inf{flex:1;min-width:0}
+.emp-name{font-weight:600;font-size:14px}
+.emp-meta{font-size:12px;color:var(--mu);margin-top:1px}
+.emp-ch{color:var(--mu);font-size:20px;flex:none;transition:.2s;line-height:1}
+.emp-body{display:none;padding:0 15px 14px;border-top:1px solid var(--br)}
+.emp-body.open{display:block}
+.btn-del{background:none;border:none;color:var(--rd);font-size:12px;cursor:pointer;padding:8px 0 0}
+.plan-chip{display:inline-flex;align-items:center;background:var(--gl);
+  border-radius:20px;padding:4px 12px;font-size:13px;font-weight:700;color:var(--g)}
+/* PAYOUT */
+.pout-emp{padding:13px 15px;border-bottom:1px solid var(--br)}
+.pout-emp:last-child{border-bottom:none}
+.pout-name{font-weight:600;font-size:14px}
+.pout-plan{font-size:12px;color:var(--mu);margin-top:1px;margin-bottom:8px}
+.pout-big{font-size:22px;font-weight:700;color:var(--py);font-variant-numeric:tabular-nums;margin-top:6px}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.bg{background:#DCFCE7;color:#16A34A}.by{background:#FEF3C7;color:#D97706}.br2{background:#FEE2E2;color:#DC2626}
+.bkdn{font-size:12px;color:var(--mu);background:var(--bg);border-radius:8px;padding:7px 10px;line-height:1.8;margin-top:6px}
+.bkdn b{color:var(--tx)}
+.tot-bar{background:var(--g);color:#fff;border-radius:var(--r);padding:15px;
+  display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.tot-lbl{font-size:13px;opacity:.8}
+.tot-amt{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;
+  align-items:flex-end;justify-content:center}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:16px 16px 0 0;padding:20px;width:100%;max-width:480px}
+.modal-title{font-size:17px;font-weight:700;margin-bottom:14px}
+</style>
+</head>
+<body>
+
+<div class="overlay" id="m-overlay" onclick="if(event.target===this)closeM()">
+  <div class="modal">
+    <div class="modal-title">Месяц и год</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px" id="m-grid"></div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button onclick="state.year--;buildMM()" style="padding:8px 18px;border-radius:8px;border:1.5px solid var(--br);background:#fff;font-size:16px;cursor:pointer">◂</button>
+      <div id="m-year" style="flex:1;text-align:center;font-weight:700;font-size:16px"></div>
+      <button onclick="state.year++;buildMM()" style="padding:8px 18px;border-radius:8px;border:1.5px solid var(--br);background:#fff;font-size:16px;cursor:pointer">▸</button>
+    </div>
+  </div>
+</div>
+
+<div class="topbar">
+  <div class="topbar-title">МИО · Мотивация</div>
+  <button class="mbtn" id="m-btn" onclick="openM()">Июнь 2026 ▾</button>
+</div>
+
+<div class="steps">
+  <button class="step active" data-page="plan"><span class="step-icon">📅</span><span class="step-lbl">План</span></button>
+  <button class="step" data-page="staff"><span class="step-icon">👥</span><span class="step-lbl">Сотрудники</span></button>
+  <button class="step" data-page="payout"><span class="step-icon">💰</span><span class="step-lbl">Выплаты</span></button>
+</div>
+
+<!-- ПЛАН -->
+<div class="page active" id="page-plan">
+  <div class="card">
+    <div class="card-hd"><span>Общий план на месяц</span><span class="plan-chip" id="chip-total">0 ₽</span></div>
+    <div class="card-bd">
+      <div class="field">
+        <label class="lbl">План выручки, ₽</label>
+        <input class="inp" type="number" id="month-plan" placeholder="7 500 000" inputmode="numeric" oninput="onPlanChange()">
+      </div>
+    </div>
+  </div>
+  <div class="card" id="days-card" style="display:none">
+    <div class="card-hd"><span>План по дням</span><button class="btn btn-outline btn-sm" onclick="autoDistribute()">Авто ↓</button></div>
+    <div class="card-bd">
+      <div class="notice">«Авто» — равномерно. Скорректируйте нужные дни вручную.</div>
+      <div class="wday-row">
+        <div class="wday-lbl">Пн</div><div class="wday-lbl">Вт</div><div class="wday-lbl">Ср</div>
+        <div class="wday-lbl">Чт</div><div class="wday-lbl">Пт</div><div class="wday-lbl">Сб</div><div class="wday-lbl">Вс</div>
+      </div>
+      <div class="days-grid" id="days-grid"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:13px;color:var(--mu)">
+        <span>Сумма по дням:</span><span id="days-sum" style="font-weight:600;color:var(--tx)">0 ₽</span>
+      </div>
+    </div>
+  </div>
+  <button class="btn btn-primary" onclick="goTo('staff')">Далее: сотрудники →</button>
+</div>
+
+<!-- СОТРУДНИКИ -->
+<div class="page" id="page-staff">
+  <div class="card">
+    <div class="card-hd">Официанты</div>
+    <div id="waiters-list"></div>
+    <div style="padding:12px 15px"><button class="btn-ghost" onclick="addW()">+ Добавить официанта</button></div>
+  </div>
+  <div class="card">
+    <div class="card-hd">Бармены</div>
+    <div id="barmen-list"></div>
+    <div style="padding:12px 15px"><button class="btn-ghost" onclick="addB()">+ Добавить бармена</button></div>
+  </div>
+  <button class="btn btn-primary" onclick="goTo('payout')" style="margin-top:4px">Далее: расчёт выплат →</button>
+</div>
+
+<!-- ВЫПЛАТЫ -->
+<div class="page" id="page-payout">
+  <div id="payout-content">
+    <div class="notice">Сначала добавьте сотрудников на вкладке «Сотрудники».</div>
+  </div>
+</div>
+
+<script>
+const MONTHS=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+let state={year:2026,month:5,monthPlan:0,dailyPlans:{}};
+let waiters=[],barmen=[],wId=0,bId=0;
+
+const fmt=n=>Math.round(n).toLocaleString('ru-RU')+' ₽';
+const fmtN=n=>Math.round(n).toLocaleString('ru-RU');
+const v=id=>parseFloat(document.getElementById(id)?.value)||0;
+
+function dim(y,m){return new Date(y,m+1,0).getDate();}
+function fdw(y,m){return(new Date(y,m,1).getDay()+6)%7;} // 0=Пн
+
+// NAV
+document.querySelectorAll('.step').forEach(s=>s.addEventListener('click',()=>goTo(s.dataset.page)));
+function goTo(p){
+  document.querySelectorAll('.step').forEach(s=>s.classList.toggle('active',s.dataset.page===p));
+  document.querySelectorAll('.page').forEach(pg=>pg.classList.toggle('active',pg.id==='page-'+p));
+  if(p==='payout')renderPayout();
+}
+
+// MONTH MODAL
+function openM(){buildMM();document.getElementById('m-overlay').classList.add('open');}
+function closeM(){document.getElementById('m-overlay').classList.remove('open');}
+function buildMM(){
+  document.getElementById('m-year').textContent=state.year;
+  document.getElementById('m-grid').innerHTML=MONTHS.map((m,i)=>`
+    <button onclick="setMonth(${i})" style="padding:10px;border-radius:9px;border:1.5px solid var(--br);cursor:pointer;
+      font-size:14px;font-weight:500;background:${i===state.month?'var(--g)':'#fff'};
+      color:${i===state.month?'#fff':'var(--tx)'}">${m} (${dim(state.year,i)})</button>`).join('');
+}
+function setMonth(m){
+  state.month=m;state.dailyPlans={};
+  document.getElementById('m-btn').textContent=MONTHS[m]+' '+state.year+' ▾';
+  buildDaysGrid();
+  renderWaiters(); // перестраиваем карточки с новым количеством дней
+  closeM();
+}
+
+// PLAN
+function buildDaysGrid(){
+  const g=document.getElementById('days-grid');
+  const total=dim(state.year,state.month);
+  const fd=fdw(state.year,state.month);
+  g.innerHTML='';
+  for(let i=0;i<fd;i++){const b=document.createElement('div');g.appendChild(b);}
+  for(let d=1;d<=total;d++){
+    const c=document.createElement('div');
+    c.className='day-cell';
+    const val=state.dailyPlans[d]||'';
+    c.innerHTML=`<div class="day-num">${d}</div>
+      <input class="day-inp${val?' hv':''}" type="number" id="dp-${d}" value="${val}"
+        inputmode="numeric" oninput="onDayInp(${d},this)">`;
+    g.appendChild(c);
+  }
+  updateDaysSum();
+}
+function onDayInp(d,el){
+  const val=parseFloat(el.value)||0;
+  state.dailyPlans[d]=val;
+  el.classList.toggle('hv',val>0);
+  updateDaysSum();
+  waiters.forEach(w=>refreshPlan(w.id));
+}
+function updateDaysSum(){
+  const s=Object.values(state.dailyPlans).reduce((a,b)=>a+b,0);
+  document.getElementById('days-sum').textContent=s?fmt(s):'0 ₽';
+}
+function onPlanChange(){
+  const val=v('month-plan');state.monthPlan=val;
+  document.getElementById('chip-total').textContent=val?fmt(val):'0 ₽';
+  const show=val>0;
+  document.getElementById('days-card').style.display=show?'block':'none';
+  if(show&&!Object.keys(state.dailyPlans).length)autoDistribute();
+}
+function autoDistribute(){
+  const total=state.monthPlan;if(!total)return;
+  const days=dim(state.year,state.month);
+  const per=Math.round(total/days);
+  for(let d=1;d<=days;d++){
+    state.dailyPlans[d]=per;
+    const el=document.getElementById(`dp-${d}`);
+    if(el){el.value=per;el.classList.add('hv');}
+  }
+  updateDaysSum();
+  waiters.forEach(w=>refreshPlan(w.id));
+}
+
+// WAITERS
+function addW(name=''){
+  const id=++wId;
+  waiters.push({id,name,hours:{},salesFact:0});
+  renderWaiters();
+}
+function removeW(id){waiters=waiters.filter(w=>w.id!==id);renderWaiters();}
+
+function renderWaiters(){
+  document.getElementById('waiters-list').innerHTML=waiters.map(buildWCard).join('');
+}
+
+function buildWCard(w){
+  const total=dim(state.year,state.month);
+  const fd=fdw(state.year,state.month);
+  const plan=calcPlan(w.id);
+  const totalH=Object.values(w.hours).reduce((a,b)=>a+b,0);
+  const shifts=Object.values(w.hours).filter(h=>h>0).length;
+
+  let cells='';
+  for(let i=0;i<fd;i++) cells+=`<div></div>`;
+  for(let d=1;d<=total;d++){
+    const h=w.hours[d]||'';
+    cells+=`<div class="day-cell">
+      <div class="day-num">${d}</div>
+      <input class="day-inp${h?' hv':''}" type="number" id="wh-${w.id}-${d}"
+        value="${h}" inputmode="decimal" step="0.5" min="0" max="24"
+        oninput="onWHour(${w.id},${d},this)">
+    </div>`;
+  }
+
+  return `<div class="emp-card" id="wcard-${w.id}">
+    <div class="emp-hd" onclick="toggleBody('wb-${w.id}','wch-${w.id}')">
+      <div class="emp-av">${(w.name||'?')[0].toUpperCase()}</div>
+      <div class="emp-inf">
+        <div class="emp-name">${w.name||'Без имени'}</div>
+        <div class="emp-meta" id="wmeta-${w.id}">${shifts} смен · ${totalH.toFixed(1)} ч${plan>0?' · план <b>'+fmtN(plan)+' ₽</b>':''}</div>
+      </div>
+      <span class="emp-ch" id="wch-${w.id}">›</span>
+    </div>
+    <div class="emp-body" id="wb-${w.id}">
+      <div class="field" style="margin-top:12px">
+        <label class="lbl">Имя</label>
+        <input class="inp" style="font-size:14px;padding:9px 12px" type="text" value="${w.name}"
+          oninput="updateWName(${w.id},this.value)">
+      </div>
+      <div class="lbl" style="margin-bottom:6px">Часы в каждый рабочий день (пусто = выходной)</div>
+      <div class="wday-row">
+        <div class="wday-lbl">Пн</div><div class="wday-lbl">Вт</div><div class="wday-lbl">Ср</div>
+        <div class="wday-lbl">Чт</div><div class="wday-lbl">Пт</div><div class="wday-lbl">Сб</div><div class="wday-lbl">Вс</div>
+      </div>
+      <div class="days-grid">${cells}</div>
+      <div id="wplanrow-${w.id}" style="text-align:center;margin-top:10px">
+        ${plan>0?`<span class="plan-chip">Личный план: ${fmtN(plan)} ₽</span>`:''}
+      </div>
+      <button class="btn-del" onclick="removeW(${w.id})">Удалить сотрудника</button>
+    </div>
+  </div>`;
+}
+
+function onWHour(id,day,el){
+  const w=waiters.find(e=>e.id===id);if(!w)return;
+  const h=parseFloat(el.value)||0;
+  w.hours[day]=h;
+  el.classList.toggle('hv',h>0);
+  refreshPlan(id);
+}
+
+function refreshPlan(id){
+  const w=waiters.find(e=>e.id===id);if(!w)return;
+  const plan=calcPlan(id);
+  const totalH=Object.values(w.hours).reduce((a,b)=>a+b,0);
+  const shifts=Object.values(w.hours).filter(h=>h>0).length;
+  const meta=document.getElementById(`wmeta-${id}`);
+  if(meta) meta.innerHTML=`${shifts} смен · ${totalH.toFixed(1)} ч${plan>0?' · план <b>'+fmtN(plan)+' ₽</b>':''}`;
+  const pc=document.getElementById(`wplanrow-${id}`);
+  if(pc) pc.innerHTML=plan>0?`<span class="plan-chip">Личный план: ${fmtN(plan)} ₽</span>`:'';
+}
+
+function updateWName(id,name){
+  const w=waiters.find(e=>e.id===id);if(!w)return;
+  w.name=name;
+  const av=document.querySelector(`#wcard-${id} .emp-av`);if(av)av.textContent=(name||'?')[0].toUpperCase();
+  const nm=document.querySelector(`#wcard-${id} .emp-name`);if(nm)nm.textContent=name||'Без имени';
+}
+
+// BARMEN — просто имя, без графика
+function addB(name=''){
+  const id=++bId;
+  barmen.push({id,name,hoursTotal:0});
+  renderBarmen();
+}
+function removeB(id){barmen=barmen.filter(b=>b.id!==id);renderBarmen();}
+function renderBarmen(){
+  document.getElementById('barmen-list').innerHTML=barmen.map(b=>`
+    <div class="emp-card">
+      <div class="emp-hd" onclick="toggleBody('bb-${b.id}','bch-${b.id}')">
+        <div class="emp-av">${(b.name||'?')[0].toUpperCase()}</div>
+        <div class="emp-inf">
+          <div class="emp-name">${b.name||'Без имени'}</div>
+          <div class="emp-meta">Бармен</div>
+        </div>
+        <span class="emp-ch" id="bch-${b.id}">›</span>
+      </div>
+      <div class="emp-body" id="bb-${b.id}">
+        <div class="field" style="margin-top:12px">
+          <label class="lbl">Имя</label>
+          <input class="inp" style="font-size:14px;padding:9px 12px" type="text" value="${b.name}"
+            oninput="barmen.find(x=>x.id===${b.id}).name=this.value;renderBarmen()">
+        </div>
+        <button class="btn-del" onclick="removeB(${b.id})">Удалить сотрудника</button>
+      </div>
+    </div>`).join('');
+}
+
+function toggleBody(bodyId,chId){
+  const body=document.getElementById(bodyId);if(!body)return;
+  body.classList.toggle('open');
+  const ch=document.getElementById(chId);
+  if(ch)ch.style.transform=body.classList.contains('open')?'rotate(90deg)':'';
+}
+
+// CALC
+function calcPlan(wId){
+  const w=waiters.find(e=>e.id===wId);if(!w)return 0;
+  const days=dim(state.year,state.month);
+  let plan=0;
+  for(let d=1;d<=days;d++){
+    const h=w.hours[d]||0;if(!h)continue;
+    const dp=state.dailyPlans[d]||0;if(!dp)continue;
+    const tot=waiters.reduce((s,e)=>s+(e.hours[d]||0),0);
+    if(tot>0)plan+=dp*(h/tot);
+  }
+  return Math.round(plan);
+}
+function wRate(pct){
+  if(pct<80)return 0;if(pct<100)return 0.020;if(pct<110)return 0.023;return 0.025;
+}
+function rateInfo(pct){
+  if(pct<80)return{lbl:'0%',cls:'br2'};
+  if(pct<100)return{lbl:'2,0%',cls:'by'};
+  if(pct<110)return{lbl:'2,3%',cls:'bg'};
+  return{lbl:'2,5%',cls:'bg'};
+}
+
+// PAYOUT
+function renderPayout(){
+  const el=document.getElementById('payout-content');
+  if(!waiters.length&&!barmen.length){
+    el.innerHTML=`<div class="notice">Сначала добавьте сотрудников на вкладке «Сотрудники».</div>`;return;
+  }
+
+  let html='<div class="notice">Введите фактические продажи — сумма к выплате посчитается автоматически.</div>';
+
+  // ОФИЦИАНТЫ
+  if(waiters.length){
+    html+=`<div class="card"><div class="card-hd">Официанты</div>`;
+    waiters.forEach(w=>{
+      const plan=calcPlan(w.id);
+      html+=`<div class="pout-emp">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+          <div>
+            <div class="pout-name">${w.name||'Без имени'}</div>
+            <div class="pout-plan">Личный план: ${plan>0?fmtN(plan)+' ₽':'нет данных — проставьте часы'}</div>
+          </div>
+          <div id="wpct-${w.id}"></div>
+        </div>
+        <input class="inp" type="number" placeholder="Факт продаж, ₽" inputmode="numeric"
+          value="${w.salesFact||''}" oninput="onWSales(${w.id},${plan},this.value)">
+        <div id="wres-${w.id}"></div>
+      </div>`;
+    });
+    html+=`<div style="padding:13px 15px;background:var(--gl)">
+      <div style="font-size:12px;color:var(--g);font-weight:600">Итого официанты</div>
+      <div id="wtotal" style="font-size:22px;font-weight:700;color:var(--py);margin-top:2px">—</div>
+    </div></div>`;
+  }
+
+  // БАРМЕНЫ
+  if(barmen.length){
+    html+=`<div class="card">
+      <div class="card-hd">Бармены — расчёт за месяц</div>
+      <div class="card-bd">
+        <div class="notice">Введите фактическую выручку по категориям и часы каждого бармена — калькулятор разделит пул пропорционально часам.</div>
+        <div class="field">
+          <label class="lbl">Выручка (коктейли + безалкогольные напитки), ₽</label>
+          <input class="inp" type="number" id="bar-fact" placeholder="1 995 000" inputmode="numeric" oninput="calcBarPay()">
+        </div>
+        <div class="lbl" style="margin-bottom:8px">Часы каждого бармена за месяц</div>
+        ${barmen.map(b=>`<div class="field">
+          <label class="lbl">${b.name||'Без имени'}</label>
+          <input class="inp" type="number" id="bh-${b.id}" placeholder="183" inputmode="numeric"
+            value="${b.hoursTotal||''}" oninput="barmen.find(x=>x.id===${b.id}).hoursTotal=parseFloat(this.value)||0;calcBarPay()">
+        </div>`).join('')}
+      </div>
+      <div id="bar-results"></div>
+      <div style="padding:13px 15px;background:var(--gl)">
+        <div style="font-size:12px;color:var(--g);font-weight:600">Итого бармены</div>
+        <div id="btotal" style="font-size:22px;font-weight:700;color:var(--py);margin-top:2px">—</div>
+      </div>
+    </div>`;
+  }
+
+  html+=`<div class="tot-bar" id="grand-bar" style="display:none">
+    <div>
+      <div class="tot-lbl">Итого к выплате</div>
+      <div class="tot-amt" id="grand-amt">—</div>
+    </div>
+    <span style="font-size:32px">💳</span>
+  </div>`;
+
+  el.innerHTML=html;
+  waiters.forEach(w=>{if(w.salesFact)onWSales(w.id,calcPlan(w.id),w.salesFact);});
+}
+
+function onWSales(wId,plan,salesVal){
+  const w=waiters.find(e=>e.id===wId);if(!w)return;
+  const sales=parseFloat(salesVal)||0;w.salesFact=sales;
+  if(!sales){
+    const r=document.getElementById(`wres-${wId}`);const p=document.getElementById(`wpct-${wId}`);
+    if(r)r.innerHTML='';if(p)p.innerHTML='';updateGrand();return;
+  }
+  const pct=plan>0?(sales/plan*100):0;
+  const rate=wRate(pct);const prem=sales*rate;
+  const{lbl,cls}=rateInfo(pct);
+  const pe=document.getElementById(`wpct-${wId}`);
+  if(pe)pe.innerHTML=pct>0?`<span class="badge ${cls}">${pct.toFixed(0)}% плана</span>`:'';
+  const re=document.getElementById(`wres-${wId}`);
+  if(re)re.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-top:6px">
+    <div class="bkdn"><b>Ставка:</b> ${lbl}<br><b>Расчёт:</b> ${fmtN(sales)} × ${lbl} = <b>${fmt(prem)}</b></div>
+    <div style="font-size:22px;font-weight:700;color:${rate>0?'var(--py)':'var(--mu)'};margin-left:8px;white-space:nowrap">${fmt(prem)}</div>
+  </div>`;
+  // Итого официанты
+  const all=waiters.filter(e=>e.salesFact>0).map(e=>{
+    const pl=calcPlan(e.id);const pc=pl>0?(e.salesFact/pl*100):0;
+    return{...e,pct:pc,prem:e.salesFact*wRate(pc)};
+  });
+  const tot=all.reduce((s,e)=>s+e.prem,0);
+  const best=all.length?all.reduce((a,b)=>b.pct>a.pct?b:a,{pct:-1}):null;
+  const bestB=best&&best.pct>0?3000:0;
+  const we=document.getElementById('wtotal');
+  if(we)we.innerHTML=`${fmt(tot+bestB)}${best&&best.pct>0?
+    `<div style="font-size:12px;color:var(--g);font-weight:500;margin-top:2px">🏆 ${best.name} (${best.pct.toFixed(0)}%) +3 000 ₽</div>`:''}`;
+  updateGrand();
+}
+
+function calcBarPay(){
+  const fact=v('bar-fact');
+  const pool=fact*0.005;
+  const totH=barmen.reduce((s,b)=>s+(b.hoursTotal||0),0);
+  let totB=0;
+  let rows='';
+  barmen.forEach(b=>{
+    const h=b.hoursTotal||0;
+    const share=totH>0?h/totH:0;
+    const prem=pool*share;totB+=prem;
+    rows+=`<div class="pout-emp" style="padding:10px 15px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div class="pout-name">${b.name||'Без имени'}</div>
+          <div class="pout-plan">${h} ч из ${totH} ч = ${totH>0?(share*100).toFixed(0):0}% пула (${fmt(pool)})</div>
+        </div>
+        <div style="font-size:20px;font-weight:700;color:var(--py)">${fmt(prem)}</div>
+      </div>
+    </div>`;
+  });
+  const br=document.getElementById('bar-results');if(br)br.innerHTML=rows;
+  const bt=document.getElementById('btotal');if(bt)bt.textContent=fmt(totB);
+  updateGrand();
+}
+
+function updateGrand(){
+  let g=0;
+  const all=waiters.filter(e=>e.salesFact>0).map(e=>{
+    const pl=calcPlan(e.id);const pc=pl>0?(e.salesFact/pl*100):0;return e.salesFact*wRate(pc);
+  });
+  g+=all.reduce((s,x)=>s+x,0);
+  if(waiters.filter(e=>e.salesFact>0).length>0)g+=3000;
+  g+=v('bar-fact')*0.005;
+  const bar=document.getElementById('grand-bar');const amt=document.getElementById('grand-amt');
+  if(g>0&&bar){bar.style.display='flex';if(amt)amt.textContent=fmt(g);}
+}
+
+// INIT
+setMonth(5);buildDaysGrid();
+addW('Новикова Мария');addW('Разинькова Карина');addW('Башкирева Софья');
+addW('Убайдуллаев Диер');addW('Меркулова Дарья');addW('Бровиков Матвей');
+addB('Маленкова Анастасия');addB('Федосова Анастасия');
+</script>
+</body>
+</html>
